@@ -14,15 +14,13 @@ import java.util.List;
 public class AuditService implements Audit {
     private List<AccountEvent> events;
 
-    public AuditService()
-    {
+    public AuditService() {
         this.events = new ArrayList<>(100);
     }
 
     @Override
-    @EventListener
-    public void auditOperation(DepositEvent event)
-    {
+    @EventListener(condition = "#event.amount >= @eventConditionFilter.depositLimit")
+    public void auditOperation(DepositEvent event) {
         events.add(event);
         System.out.println("ACCOUNT ID: "
                 + event.getAccountId() + " "
@@ -31,9 +29,8 @@ public class AuditService implements Audit {
     }
 
     @Override
-    @EventListener
-    public void auditOperation(WithdrawEvent event)
-    {
+    @EventListener(condition = "#event.amount >= @eventConditionFilter.withdrawalLimit")
+    public void auditOperation(WithdrawEvent event) {
         events.add(event);
         System.out.println("ACCOUNT ID: "
                 + event.getAccountId() + " "
@@ -44,16 +41,14 @@ public class AuditService implements Audit {
 
     @Override
     @EventListener
-    public void auditOperation(BalanceEvent event)
-    {
+    public void auditOperation(BalanceEvent event) {
         events.add(event);
         System.out.println("ACCOUNT ID: "
                 + event.getAccountId() + " "
                 + event.getSource());
     }
 
-    public List<AccountEvent> getEvents()
-    {
+    public List<AccountEvent> getEvents() {
         return new ArrayList<>(events);
     }
 
